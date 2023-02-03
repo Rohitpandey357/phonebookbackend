@@ -1,6 +1,13 @@
 const express = require('express')
 const app = express();
+const morgan = require('morgan');
+
 app.use(express.json());
+app.use(morgan('tiny'))
+
+morgan.token('body', (req, res) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :response-time ms -' 
+ + ':res[content-length] :body - :req[content-length]'));
 
 let persons = [
     { 
@@ -37,7 +44,6 @@ app.get('/api/persons', (request, response) => {
 
 // gives information about phonebook
 app.get('/info', (request, response) => {
-  console.log(request);
   response.send(`<h3>Phonebook has info of ${persons.length} people<h3>
         <h3>${new Date()}</h3>        
   `);
@@ -75,8 +81,8 @@ app.post('/api/persons', (request, response) => {
     })
   }
   person.id = Math.floor(Math.random() * 10000).toString();
-  console.log(person);
   persons.push(person);
+  response.status(201).json(person);
 });
 
 const PORT = 3001
