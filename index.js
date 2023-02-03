@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express();
+app.use(express.json());
 
 let persons = [
     { 
@@ -24,14 +25,17 @@ let persons = [
     }
 ]
 
+// root of the server
 app.get('/', (request, response) => {
     response.send('<h1>Hello!</h1>');
 })
 
+// gets all persons
 app.get('/api/persons', (request, response) => {
     response.json(persons);
 })
 
+// gives information about phonebook
 app.get('/info', (request, response) => {
   console.log(request);
   response.send(`<h3>Phonebook has info of ${persons.length} people<h3>
@@ -39,6 +43,7 @@ app.get('/info', (request, response) => {
   `);
 })
 
+//gets a specific person with a specific id
 app.get('/api/persons/:id', (request, response) => {
   const id = parseInt(request.params.id);
   const person = persons.find(p => p.id === id);
@@ -48,6 +53,31 @@ app.get('/api/persons/:id', (request, response) => {
     response.status(404).end();
   }
 })
+
+//deletes a person by id
+app.delete('/api/persons/:id', (request, response) => {
+  const id = parseInt(request.params.id);
+  persons = persons.filter(p => p.id !== id);
+  
+  response.status(204).end();
+})
+
+// adds a person to the phonebook
+app.post('/api/persons', (request, response) => {
+  const person = request.body;
+  if(!person.name || !person.number) {
+    return response.status(400).json({ 
+      error: 'name and number are required' 
+    });
+  } else if(persons.find(p => p.name === person.name)) {
+    return response.status(400).json({
+      error: 'name already exists'
+    })
+  }
+  person.id = Math.floor(Math.random() * 10000).toString();
+  console.log(person);
+  persons.push(person);
+});
 
 const PORT = 3001
 app.listen(PORT, () => {
