@@ -1,0 +1,27 @@
+{
+  "name": "phonebookbackend",
+  "version": "1.0.0",
+  "description": "Backend for phonebook app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rohitpandey357/phonebookbackend.git"
+  },
+  "author": "Rohit Pandey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rohitpandey357/phonebookbackend/issues"
+  },
+  "homepage": "https://github.com/Rohitpandey357/phonebookbackend#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
