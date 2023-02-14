@@ -26,7 +26,7 @@ const mongoose = require('mongoose');
                 console.log(person)
             })
             mongoose.connection.close()
-            process.exit(0);
+            process.exit(1);
         })
     }
 
