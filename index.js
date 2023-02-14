@@ -2,6 +2,18 @@ const express = require('express')
 const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const dbUrl = 'mongodb+srv://phonebook:phonebook@cluster0.nkys2oh.mongodb.net/?retryWrites=true&w=majority';
+
+mongoose.set('strictQuery', false);
+
+const personSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  number: String
+})
+
+const Person = mongoose.model('Person', personSchema)
 
 app.use(express.json());
 app.use(morgan('tiny'))
