@@ -57,18 +57,13 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({ 
       error: 'name and number are required' 
     });
-  } else if(Person.find({name : body.name})
-        .then(result => result.length > 0)) {
-          return response.status(400).json({
-            error: 'name already exists'
-        })
   }
 
   const person = new Person({
     name : body.name,
     number : body.number
   })
-  Person.bulkSave().then(savedPerson => {
+  person.save().then(savedPerson => {
     response.status(201).json(savedPerson);
   })
 });
