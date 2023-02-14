@@ -64,7 +64,8 @@ app.post('/api/persons', (request, response) => {
     number : body.number
   })
   person.save().then(savedPerson => {
-    response.status(201).json(savedPerson);
+    console.log(savedPerson)
+    return response.status(201).json(savedPerson);
   })
 });
 
