@@ -22,43 +22,53 @@ app.get('/', (request, response) => {
 })
 
 // gets all persons
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   Person.find({}).then(persons => {
     response.json(persons);
   })
+  .catch(error => next(error));
 })
 
 // gives information about phonebook
-app.get('/info', (request, response) => {
-  response.send(`<h3>Phonebook has info of ${persons.length} people<h3>
-        <h3>${new Date()}</h3>        
-  `);
+app.get('/info', (request, response, next) => {
+  Person.countDocuments().then(count => {
+    response.send(`<h3>Phonebook has info of ${count} people<h3>
+        <h3>${new Date()}</h3>`)
+  })
+  .catch(error => next(error));
+  
 })
 
 //gets a specific person with a specific id
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id).then(person => {
-    response.json(person);
+    if(person) {
+      response.json(person);
+    } else {
+      response.status(404).end();
+    }
   })
+  .catch(error => next(error));
 })
 
 //deletes a person by id
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
   .then(person => {
     response.status(204).json(person);
   })
+  .catch(error => next(error))
 })
 
 // adds a person to the phonebook
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body;
   if(!body.name || !body.number) {
     return response.status(400).json({ 
       error: 'name and number are required' 
     });
   }
-
+  
   const person = new Person({
     name : body.name,
     number : body.number
@@ -67,7 +77,41 @@ app.post('/api/persons', (request, response) => {
     console.log(savedPerson)
     return response.status(201).json(savedPerson);
   })
-});
+  .catch(error => next(error));
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    name : body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+      .then(updatedPerson => {
+        response.json(updatedPerson);
+      })
+      .catch(error => next(error)); 
+})
+
+//unknown endpoint
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' });
+}
+app.use(unknownEndpoint);
+
+//invalid id
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT 
